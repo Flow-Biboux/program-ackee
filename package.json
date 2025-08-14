@@ -1,0 +1,21 @@
+{
+  "name": "program-flow-biboux",
+  "version": "1.0.0",
+  "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/idxPpgnz) ![School of Solana](https://github.com/Ackee-Blockchain/school-of-solana/blob/master/.banner/banner.png?raw=true)",
+  "homepage": "https://github.com/Flow-Biboux/program-Flow-Biboux#readme",
+  "bugs": {
+    "url": "https://github.com/Flow-Biboux/program-Flow-Biboux/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flow-Biboux/program-Flow-Biboux.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "frontend/src/app/page.tsx",
+  "scripts": {
+    "build": "next build frontend/",
+    "dev": "next dev frontend/"
+  }
+}
