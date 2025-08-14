@@ -34,6 +34,7 @@ describe("transaction_staking", () => {
 
   let systemProgram = anchor.web3.SystemProgram.programId;
   let feeBasis = 10000;
+  const accountRent = 1343280; // 65 bytes * 0.00089088 SOL per byte
 
   before(async () => {
     // Airdrop SOL to test accounts
@@ -149,8 +150,11 @@ describe("transaction_staking", () => {
       const user1BalanceAfter = await provider.connection.getBalance(user1.publicKey);
       const stakerBalanceAfter = await provider.connection.getBalance(user1StakerPda);
 
+      // Log actual account size
+      const stakerAccountInfo = await provider.connection.getAccountInfo(user1StakerPda);
+      console.log('Staker account data length:', stakerAccountInfo.data.length);
+
       // Calculate expected costs based on actual observed values
-      const accountRent = 1336320; // 64 bytes * 0.00089088 SOL per byte
       const expectedTotalCost = stakeAmount + accountRent; // No additional transaction fee observed
 
       // Verify balance changes
