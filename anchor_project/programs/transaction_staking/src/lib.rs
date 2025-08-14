@@ -7,8 +7,9 @@ pub mod initialize;
 pub mod staking;
 pub mod state;
 pub mod transaction;
+pub mod constant;
 
-pub use crate::{admin::*, initialize::*, staking::*, state::*, transaction::*};
+pub use crate::{admin::*, constant::*, initialize::*, staking::*, state::*, transaction::*};
 
 declare_id!("9eXsPTK6DZ38uFnTuVaWNkmNgmCnWrZb9k64jwJdEzsv");
 

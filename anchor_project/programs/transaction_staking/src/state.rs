@@ -1,4 +1,4 @@
-use crate::{error::StakingError::*, helper::*};
+use crate::{constant::*, error::StakingError::*, helper::*};
 use anchor_lang::prelude::*;
 
 #[account]
@@ -27,10 +27,6 @@ pub struct FeeVault {
     pub bump: u8,
 }
 
-pub const GLOBAL_SEED: &str = "global-state";
-pub const FEE_VAULT_SEED: &str = "fee-vault";
-pub const STAKER_SEED: &str = "staker";
-pub const FEE_DENOMINATOR: u32 = 100_000; // 100_000 = 100%, 10_000 = 10%, 1_000 = 1%, 100 = 0.1%
 
 impl GlobalState {
     pub fn init(&mut self, admin: Pubkey, fee_vault: Pubkey, bump: u8) {

@@ -1,4 +1,4 @@
-use {crate::state::*, anchor_lang::prelude::*};
+use {crate::{constant::*, state::*}, anchor_lang::prelude::*};
 
 pub fn process_initialize(ctx: Context<Initialize>, fee_basis_points: Option<u32>) -> Result<()> {
     ctx.accounts.global_state.init(

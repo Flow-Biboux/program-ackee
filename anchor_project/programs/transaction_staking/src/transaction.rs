@@ -1,4 +1,4 @@
-use crate::{error::StakingError::*, helper::*};
+use crate::{constant::*, error::StakingError::*, helper::*, state::*};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -8,15 +8,15 @@ pub struct Transfer<'info> {
     #[account(mut)]
     pub to: SystemAccount<'info>,
     #[account(mut,
-        seeds = [crate::state::FEE_VAULT_SEED.as_bytes()],
+        seeds = [FEE_VAULT_SEED.as_bytes()],
         bump = fee_vault.bump
     )]
-    pub fee_vault: Account<'info, crate::state::FeeVault>,
+    pub fee_vault: Account<'info, FeeVault>,
     #[account(mut,
-        seeds = [crate::state::GLOBAL_SEED.as_bytes()],
+        seeds = [GLOBAL_SEED.as_bytes()],
         bump = global_state.bump
     )]
-    pub global_state: Account<'info, crate::state::GlobalState>,
+    pub global_state: Account<'info, GlobalState>,
     pub system_program: Program<'info, System>,
 }
 

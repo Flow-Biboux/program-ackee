@@ -1,4 +1,5 @@
-use {crate::state::*, anchor_lang::prelude::*};
+use crate::{constant::*, state::*};
+use anchor_lang::prelude::*;
 
 pub fn process_create_staking(ctx: Context<CreateStaking>, amount: u64) -> Result<()> {
     let global = &mut ctx.accounts.global_state;
