@@ -8,7 +8,6 @@ pub fn process_initialize(ctx: Context<Initialize>, fee_basis_points: Option<u32
     );
     ctx.accounts.fee_vault.init(ctx.bumps.fee_vault);
 
-    // Set custom fee if provided, otherwise use default (1000 = 1%)
     if let Some(fee) = fee_basis_points {
         ctx.accounts.global_state.update_fee_basis_points(fee)?;
     }
