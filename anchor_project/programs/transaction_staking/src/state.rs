@@ -18,15 +18,14 @@ pub struct Staker {
     pub owner: Pubkey,
     pub amount: u64,
     pub reward_debt: u128,
+    pub bump: u8,
 }
 
 #[account]
 #[derive(InitSpace)]
-
 pub struct FeeVault {
     pub bump: u8,
 }
-
 
 impl GlobalState {
     pub fn init(&mut self, admin: Pubkey, fee_vault: Pubkey, bump: u8) {
@@ -99,11 +98,12 @@ impl FeeVault {
 }
 
 impl Staker {
-    pub fn init(&mut self, owner: Pubkey, global: &GlobalState) {
+    pub fn init(&mut self, owner: Pubkey, global: &GlobalState, bump: u8) {
         self.owner = owner;
         self.amount = 0;
         // Set reward_debt to current reward_per_share so new stakers only get future rewards
         self.reward_debt = global.reward_per_share;
+        self.bump = bump;
     }
 
     pub fn increase_stake_amount(&mut self, amount: u64) -> Result<()> {
