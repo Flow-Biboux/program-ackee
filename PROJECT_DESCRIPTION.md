@@ -1,6 +1,6 @@
 # Project Description
 
-**Deployed Frontend URL:** [To be added upon deployment]
+**Deployed Frontend URL:** [To be added udpon deployment]
 
 **Solana Program ID:** 9eXsPTK6DZ38uFnTuVaWNkmNgmCnWrZb9k64jwJdEzsv
 
