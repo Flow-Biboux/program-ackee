@@ -71,7 +71,7 @@ describe("transaction_staking", () => {
     );
   });
 
-  describe("Positive Tests", () => {
+  describe("happy Tests", () => {
     it("Initialize the staking program", async () => {
       try {
         const tx = await program.methods
@@ -562,7 +562,7 @@ describe("transaction_staking", () => {
   });
 
   // ===== NEGATIVE TESTS - SECURITY AND EDGE CASES =====
-  describe("Negative Tests", () => {
+  describe("unhappy Tests", () => {
     it("Should fail to stake zero amount", async () => {
       try {
         await program.methods
