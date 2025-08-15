@@ -11,7 +11,7 @@ pub mod constant;
 
 pub use crate::{admin::*, constant::*, initialize::*, staking::*, state::*, transaction::*};
 
-declare_id!("9eXsPTK6DZ38uFnTuVaWNkmNgmCnWrZb9k64jwJdEzsv");
+declare_id!("5QiH48s7ThNXnxibnC8rDDHV8jBBaphpvebGKZdxHav4");
 
 #[program]
 pub mod transaction_staking {

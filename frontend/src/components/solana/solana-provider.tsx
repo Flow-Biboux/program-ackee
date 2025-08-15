@@ -1,18 +1,26 @@
-import dynamic from 'next/dynamic'
-import { ReactNode } from 'react'
-import { createSolanaDevnet, createSolanaLocalnet, createWalletUiConfig, WalletUi } from '@wallet-ui/react'
 
-export const WalletButton = dynamic(async () => (await import('@wallet-ui/react')).WalletUiDropdown, {
-  ssr: false,
-})
-export const ClusterButton = dynamic(async () => (await import('@wallet-ui/react')).WalletUiClusterDropdown, {
-  ssr: false,
-})
+'use client'
+import '@solana/wallet-adapter-react-ui/styles.css'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
+import { PhantomWalletAdapter,SolflareWalletAdapter, } from '@solana/wallet-adapter-wallets'
+import { clusterApiUrl } from '@solana/web3.js'
+import { useMemo } from 'react'
 
-const config = createWalletUiConfig({
-  clusters: [createSolanaDevnet(), createSolanaLocalnet()],
-})
 
-export function SolanaProvider({ children }: { children: ReactNode }) {
-  return <WalletUi config={config}>{children}</WalletUi>
+export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
+  const network = WalletAdapterNetwork.Devnet
+  console.log('network', network,clusterApiUrl(network));
+  
+  const endpoint = useMemo(() => clusterApiUrl(network), [network])
+  const wallets = useMemo(() => [new PhantomWalletAdapter(),new SolflareWalletAdapter()], [])
+
+  return (
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  )
 }

@@ -2,7 +2,7 @@
 
 **Deployed Frontend URL:** [To be added udpon deployment]
 
-**Solana Program ID:** 9eXsPTK6DZ38uFnTuVaWNkmNgmCnWrZb9k64jwJdEzsv
+**Solana Program ID:** 5QiH48s7ThNXnxibnC8rDDHV8jBBaphpvebGKZdxHav4
 
 ## Project Overview
 

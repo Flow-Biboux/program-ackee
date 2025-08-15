@@ -6,7 +6,9 @@ pub fn process_create_staking(ctx: Context<CreateStaking>, amount: u64) -> Resul
     let user = &mut ctx.accounts.user.to_account_info();
     let staker = &mut ctx.accounts.staker.to_account_info();
 
-    ctx.accounts.staker.init(ctx.accounts.user.key(), global, ctx.bumps.staker);
+    ctx.accounts
+        .staker
+        .init(ctx.accounts.user.key(), global, ctx.bumps.staker);
     ctx.accounts
         .staker
         .add_stake(global, user, staker, amount)?;
