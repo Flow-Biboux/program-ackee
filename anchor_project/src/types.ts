@@ -1,1 +1,1 @@
-export { TransactionStaking } from "../target/types/transaction_staking";
+export { type TransactionStaking } from "../target/types/transaction_staking";
