@@ -3,20 +3,14 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AppHero } from '@/components/app-hero'
-// import { useWalletUi } from '@wallet-ui/react'
 import { createStakingTx, addStakingTx, decreaseStakingTx, closeStakingTx, claimRewardsTx } from 'anchor_project'
-// import { useWalletTransactionSignAndSend } from '@/components/solana/use-wallet-transaction-sign-and-send'
-import { useTransaction } from '../solana/useTransaction'
-// import { connection } from 'next/dist/server/request/connection'
-// import { connection } from '../solana/solana-provider'
+import { useTransactionWithFeedback } from '../solana/useTransactionWithFeedback'
+import { TransactionHashDisplay } from '../solana/TransactionHashDisplay'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 
 export function StakingFeature() {
-  // const { client, wallet, cluster } = useWalletUi()
   const [amount, setAmount] = useState('1')
-  const { signAndSend, publicKey ,connection} = useTransaction()
-  
-  const disabled = !publicKey
+  const { executeTransaction, txHash, isLoading, publicKey, connection, disabled } = useTransactionWithFeedback()
 
   return (
     <div>
@@ -28,66 +22,69 @@ export function StakingFeature() {
         </div>
         <div className="grid grid-cols-2 gap-2">
           <Button
-            disabled={disabled}
-            onClick={async () => {
-              const tx = await createStakingTx({
-                user: publicKey!,
-                amount: parseFloat(amount) * LAMPORTS_PER_SOL,
-                connection,
-              })
-              // let res = await client.sendAndConfirmTransaction(tx)
-              // console.log(res)
-              await signAndSend(tx, connection)
-            }}
+            disabled={disabled || isLoading}
+            onClick={() =>
+              executeTransaction(
+                () =>
+                  createStakingTx({
+                    user: publicKey!,
+                    amount: parseFloat(amount) * LAMPORTS_PER_SOL,
+                    connection,
+                  }),
+                'Create Staking',
+              )
+            }
           >
-            Create Staking
+            {isLoading ? 'Creating...' : 'Create Staking'}
           </Button>
           <Button
-            disabled={disabled}
-            onClick={async () => {
-              const tx = await addStakingTx({
-                user: publicKey!,
-                amount: parseFloat(amount) * LAMPORTS_PER_SOL,
-                connection,
-              })
-              await signAndSend(tx, connection)
-            }}
+            disabled={disabled || isLoading}
+            onClick={() =>
+              executeTransaction(
+                () =>
+                  addStakingTx({
+                    user: publicKey!,
+                    amount: parseFloat(amount) * LAMPORTS_PER_SOL,
+                    connection,
+                  }),
+                'Add Stake',
+              )
+            }
           >
-            Add Stake
+            {isLoading ? 'Adding...' : 'Add Stake'}
           </Button>
           <Button
-            disabled={disabled}
-            onClick={async () => {
-              const tx = await decreaseStakingTx({
-                user: publicKey!,
-                amount: parseFloat(amount) * LAMPORTS_PER_SOL,
-                connection,
-              })
-              await signAndSend(tx, connection)
-            }}
+            disabled={disabled || isLoading}
+            onClick={() =>
+              executeTransaction(
+                () =>
+                  decreaseStakingTx({
+                    user: publicKey!,
+                    amount: parseFloat(amount) * LAMPORTS_PER_SOL,
+                    connection,
+                  }),
+                'Decrease Stake',
+              )
+            }
           >
-            Decrease Stake
+            {isLoading ? 'Decreasing...' : 'Decrease Stake'}
           </Button>
           <Button
-            disabled={disabled}
-            onClick={async () => {
-              const tx = await claimRewardsTx({ user: publicKey!, connection })
-              await signAndSend(tx, connection)
-            }}
+            disabled={disabled || isLoading}
+            onClick={() => executeTransaction(() => claimRewardsTx({ user: publicKey!, connection }), 'Claim Rewards')}
           >
-            Claim Rewards
+            {isLoading ? 'Claiming...' : 'Claim Rewards'}
           </Button>
           <Button
             variant="destructive"
-            disabled={disabled}
-            onClick={async () => {
-              const tx = await closeStakingTx({ user: publicKey!, connection })
-              await signAndSend(tx, connection)
-            }}
+            disabled={disabled || isLoading}
+            onClick={() => executeTransaction(() => closeStakingTx({ user: publicKey!, connection }), 'Close Staking')}
           >
-            Close Staking
+            {isLoading ? 'Closing...' : 'Close Staking'}
           </Button>
         </div>
+
+        <TransactionHashDisplay txHash={txHash} />
       </div>
     </div>
   )
