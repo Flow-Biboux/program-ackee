@@ -11,8 +11,29 @@ import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 
 export function StakingFeature() {
   const [amount, setAmount] = useState('1')
-  const { executeTransaction, txHash, isLoading, publicKey, connection, disabled } = useTransactionWithFeedback()
-  const { stakingData, isLoading: isLoadingStaking, error: stakingError } = useStakingData()
+  const [loadingStates, setLoadingStates] = useState({
+    create: false,
+    add: false,
+    decrease: false,
+    close: false,
+    claim: false,
+  })
+  const { executeTransaction, txHash, publicKey, connection, disabled } = useTransactionWithFeedback()
+  const { stakingData, isLoading: isLoadingStaking, error: stakingError, refetch } = useStakingData()
+
+  const handleTransaction = async (
+    action: keyof typeof loadingStates,
+    transactionBuilder: () => Promise<any>,
+    actionName: string
+  ) => {
+    setLoadingStates(prev => ({ ...prev, [action]: true }))
+    try {
+      await executeTransaction(transactionBuilder, actionName)
+      await refetch()
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [action]: false }))
+    }
+  }
 
   return (
     <div>
@@ -29,6 +50,8 @@ export function StakingFeature() {
               <div className="font-semibold mb-2">Your Staking Status:</div>
               <div>Staked Amount: {stakingData.amount.toFixed(4)} SOL</div>
               <div>Available Rewards: {stakingData.rewards.toFixed(4)} SOL</div>
+              <div>Total Staked: {stakingData.totalStaked.toFixed(4)} SOL</div>
+              <div>Your Share: {stakingData.userPercentage.toFixed(2)}%</div>
               <div>Account Status: {stakingData.exists ? 'Active' : 'Not Created'}</div>
             </div>
           </div>
@@ -40,9 +63,10 @@ export function StakingFeature() {
         </div>
         <div className="grid grid-cols-2 gap-2">
           <Button
-            disabled={disabled || isLoading}
+            disabled={disabled || loadingStates.create}
             onClick={() =>
-              executeTransaction(
+              handleTransaction(
+                'create',
                 () =>
                   createStakingTx({
                     user: publicKey!,
@@ -53,12 +77,13 @@ export function StakingFeature() {
               )
             }
           >
-            {isLoading ? 'Creating...' : 'Create Staking'}
+            {loadingStates.create ? 'Creating...' : 'Create Staking'}
           </Button>
           <Button
-            disabled={disabled || isLoading}
+            disabled={disabled || loadingStates.add}
             onClick={() =>
-              executeTransaction(
+              handleTransaction(
+                'add',
                 () =>
                   addStakingTx({
                     user: publicKey!,
@@ -69,12 +94,13 @@ export function StakingFeature() {
               )
             }
           >
-            {isLoading ? 'Adding...' : 'Add Stake'}
+            {loadingStates.add ? 'Adding...' : 'Add Stake'}
           </Button>
           <Button
-            disabled={disabled || isLoading}
+            disabled={disabled || loadingStates.decrease}
             onClick={() =>
-              executeTransaction(
+              handleTransaction(
+                'decrease',
                 () =>
                   decreaseStakingTx({
                     user: publicKey!,
@@ -85,20 +111,32 @@ export function StakingFeature() {
               )
             }
           >
-            {isLoading ? 'Decreasing...' : 'Decrease Stake'}
+            {loadingStates.decrease ? 'Decreasing...' : 'Decrease Stake'}
           </Button>
           <Button
-            disabled={disabled || isLoading}
-            onClick={() => executeTransaction(() => claimRewardsTx({ user: publicKey!, connection }), 'Claim Rewards')}
+            disabled={disabled || loadingStates.claim}
+            onClick={() => 
+              handleTransaction(
+                'claim',
+                () => claimRewardsTx({ user: publicKey!, connection }), 
+                'Claim Rewards'
+              )
+            }
           >
-            {isLoading ? 'Claiming...' : 'Claim Rewards'}
+            {loadingStates.claim ? 'Claiming...' : 'Claim Rewards'}
           </Button>
           <Button
             variant="destructive"
-            disabled={disabled || isLoading}
-            onClick={() => executeTransaction(() => closeStakingTx({ user: publicKey!, connection }), 'Close Staking')}
+            disabled={disabled || loadingStates.close}
+            onClick={() => 
+              handleTransaction(
+                'close',
+                () => closeStakingTx({ user: publicKey!, connection }), 
+                'Close Staking'
+              )
+            }
           >
-            {isLoading ? 'Closing...' : 'Close Staking'}
+            {loadingStates.close ? 'Closing...' : 'Close Staking'}
           </Button>
         </div>
 
