@@ -18,13 +18,6 @@ const nextConfig: NextConfig = {
     config.externals = config.externals || [];
     config.externals.push('fs', 'path', 'os', 'pino-pretty', 'pino');
     
-    // Ignore specific modules that cause issues in browser
-    config.plugins.push(
-      new config.webpack.IgnorePlugin({
-        resourceRegExp: /^(pino-pretty|pino)$/,
-      })
-    );
-    
     return config;
   },
   async headers() {
