@@ -8,20 +8,31 @@ import { Menu, X } from 'lucide-react'
 import { ThemeSelect } from '@/components/theme-select'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useIsAdmin } from './solana/useIsAdmin'
 
 export function AppHeader({ links = [] }: { links: { label: string; path: string }[] }) {
   const pathname = usePathname()
   const [showMenu, setShowMenu] = useState(false)
   const { connected } = useWallet()
+  const { isUserAdmin } = useIsAdmin()
 
   function isActive(path: string) {
     return path === '/' ? pathname === '/' : pathname.startsWith(path)
   }
 
-  // Filter links based on wallet connection
-  const publicLinks = links.filter(link => link.path === '/' || link.path === '/account')
-  const privateLinks = links.filter(link => !publicLinks.includes(link))
-  const displayLinks = connected ? links : publicLinks
+  // Filter links based on wallet connection and admin status
+  const publicLinks = links.filter((link) => link.path === '/' || link.path === '/account')
+  const privateLinks = links.filter((link) => !publicLinks.includes(link))
+  const adminLinks = links.filter((link) => link.path === '/admin')
+  const nonAdminPrivateLinks = privateLinks.filter((link) => !adminLinks.includes(link))
+
+  let displayLinks = publicLinks
+  if (connected) {
+    displayLinks = [...nonAdminPrivateLinks]
+    if (isUserAdmin) {
+      displayLinks = [...displayLinks, ...adminLinks]
+    }
+  }
 
   return (
     <header className="relative z-50 px-4 py-2 bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-400">
