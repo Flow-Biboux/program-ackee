@@ -1,15 +1,17 @@
 # Project Description
 
-**Deployed Frontend URL:** [To be added udpon deployment]
+**Deployed Frontend URL:** [To be added upon deployment]
 
 **Solana Program ID:** 5QiH48s7ThNXnxibnC8rDDHV8jBBaphpvebGKZdxHav4
 
 ## Project Overview
 
 ### Description
+
 This dApp is a staking and fee-sharing platform built on Solana using Anchor. Users can stake SOL, participate in a staking pool, and earn a share of transaction fees collected from transfers made through the program. The system uses a reward-per-share model to distribute fees fairly and efficiently to stakers, based on their share of the total staked amount at the time of each fee event.
 
 ### Key Features
+
 - **Staking:** Users can create a staking account, deposit SOL, add to or decrease their stake, and close their staking account to withdraw funds.
 - **Transfer with Fee:** Users can transfer SOL through the program. Each transfer incurs a fee, which is sent to a program-controlled vault (PDA) and distributed to stakers.
 - **Fee Distribution & Claiming:** The program uses a reward-per-share model. Stakers can claim their share of accumulated fees at any time, and only users staked at the time of a transfer are eligible for that transfer's fee.
@@ -18,29 +20,56 @@ This dApp is a staking and fee-sharing platform built on Solana using Anchor. Us
 ### How to Use the dApp
 
 1. **Connect Wallet**
-   - Connect your Solana wallet to the frontend.
+   - Connect your Solana wallet (Phantom, Solflare, etc.) to the frontend using the wallet button in the header.
 2. **Stake SOL**
-   - Create a staking account and deposit SOL to participate in the staking pool.
+   - Navigate to the "Staking" tab and create a staking account by depositing SOL to participate in the staking pool.
+   - Add more SOL to increase your stake or decrease it to withdraw partial amounts.
 3. **Transfer SOL**
-   - Use the dApp to transfer SOL to another user. A fee will be collected and distributed to stakers.
+   - Use the "Transfer" tab to send SOL to another user. A fee will be automatically collected and distributed to stakers.
 4. **Claim Rewards**
-   - Claim your share of accumulated fees at any time.
+   - Claim your share of accumulated fees at any time using the "Claim Rewards" button in the staking section.
 5. **Unstake/Close Account**
    - Decrease your stake or close your staking account to withdraw your funds (must claim all pending rewards first).
+6. **Admin Functions** (Admin only)
+   - If you are the program admin, access the "Admin" tab to update fee rates, change admin authority, or perform emergency withdrawals.
 
 ## Program Architecture
 
+### Frontend Architecture
+
+The dApp features a modern Next.js frontend with the following architecture:
+
+**Technology Stack:**
+
+- **Next.js 14:** React framework with App Router for server-side rendering and routing
+- **TypeScript:** Full type safety across the application
+- **Tailwind CSS:** Utility-first CSS framework for responsive design
+- **Solana Wallet Adapter:** Standard library for wallet integration (Phantom, Solflare, etc.)
+- **React Query:** Data fetching, caching, and state management
+- **Monorepo Structure:** Shared contract client code between frontend and Anchor project
+
+**Key Components:**
+
+- **Wallet Integration:** Seamless wallet connection with multi-wallet support
+- **Transaction Management:** Reusable hooks for transaction signing, loading states, and error handling
+- **Admin Access Control:** Dynamic UI that shows admin features only to contract admins
+- **Real-time Feedback:** Transaction hash display with Solana Explorer links
+
 ### PDA Usage
+
 The program uses Program Derived Addresses (PDAs) to securely manage program state and fee vaults.
 
 **PDAs Used:**
+
 - **Global State PDA:** Stores the global state of the staking pool (seeds: ["global-state"]).
 - **Fee Vault PDA:** Holds collected fees in a program-controlled account (seeds: ["fee-vault"]). This PDA is the authority over the fee vault account, ensuring only the program can move funds from it. All transfer fees are deposited here and distributed to stakers upon claiming.
 - **Staker PDA:** Stores each user's staking data (seeds: ["staker", user_pubkey]).
 - **Fee Account PDA:** A dedicated PDA that acts as the actual on-chain account (system or SPL token account) where the collected fees (from the Fee Vault PDA) are physically stored. This account is controlled by the Fee Vault PDA and is the source of funds when stakers claim their rewards. It ensures that fee funds are isolated and securely managed by the program.
 
 ### Program Instructions
+
 **Instructions Implemented:**
+
 - **initialize:** Initializes the program, setting up the global state and fee vault.
 - **createStaking:** Creates a staking account and deposits SOL.
 - **addStaking:** Adds more SOL to an existing staking account.
@@ -53,6 +82,7 @@ The program uses Program Derived Addresses (PDAs) to securely manage program sta
 - **emergencyWithdraw:** Admin instruction to withdraw funds from the fee vault in emergencies.
 
 ### Account Structure
+
 The main account structures are as follows:
 
 ```rust
@@ -86,6 +116,7 @@ pub struct FeeVault {
 ### Test Coverage
 
 **Functional Testing (User & Admin Actions):**
+
 - **Program Initialization:** We test that the admin can initialize the staking program, and that it cannot be initialized twice.
 - **Staking:** Users can create a staking account and deposit SOL. We check that the staked amount is correct, the user's account is set up properly, and the global state is updated.
 - **Adding Stake:** Users can add more SOL to their existing staking account. We verify the new total, and that rewards are only calculated for the correct periods.
@@ -97,6 +128,7 @@ pub struct FeeVault {
 - **Admin Actions:** We test that only the admin can update the fee rate, change admin authority, or perform emergency withdrawals from the fee vault, and that these actions work as intended.
 
 **Negative Testing (Edge Cases & Security):**
+
 - **Invalid Stake Amounts:** We try staking zero or more than the user's balance, and check that these are rejected.
 - **Over-withdrawal:** We attempt to decrease or withdraw more than the staked amount, and ensure the program blocks it.
 - **Unauthorized Access:** We test that users cannot modify or close other users' staking accounts, or perform admin actions without the correct authority.
@@ -107,12 +139,59 @@ pub struct FeeVault {
 - **Wrong PDAs/Seeds:** We test that using incorrect PDAs or seeds is rejected by the program.
 - **Double-claiming:** We verify that users cannot claim the same rewards twice.
 
+## Development & Deployment
+
+### Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start the frontend development server
+cd frontend
+npm run dev
+```
+
+### Deployment
+
+The frontend is configured for deployment on Vercel with the following setup:
+
+- **Root Directory:** `frontend/`
+- **Build Command:** `npm run build`
+- **Output Directory:** `.next`
+- **Environment:** Node.js 18+
+
+### Monorepo Structure
+
+```
+program-Flow-Biboux/
+├── frontend/                 # Next.js frontend application
+│   ├── src/
+│   │   ├── app/             # Next.js App Router pages
+│   │   ├── components/      # React components
+│   │   └── lib/            # Utility functions
+│   └── package.json
+├── anchor_project/          # Solana program and client
+│   ├── programs/           # Anchor program source
+│   ├── src/               # TypeScript client code
+│   └── Cargo.toml
+└── package.json           # Root workspace configuration
+```
 
 ### Running Tests
+
 ```bash
-# Commands to run your tests
+# Run Anchor tests
+cd anchor_project
 anchor test
 ```
 
 ### Additional Notes for Evaluators
-next step would be to use tooken2022 instead of transfering sol and use cpi guard to ensure transfer fees need to be payed
+
+**Current Implementation:** The dApp currently handles SOL transfers with fee collection and distribution to stakers.
+
+**Future Enhancements:**
+
+- Implement Token-2022 instead of SOL transfers for enhanced token functionality
+- Add CPI (Cross-Program Invocation) guards to ensure transfer fees are properly enforced
+- Implement additional security measures and optimizations
