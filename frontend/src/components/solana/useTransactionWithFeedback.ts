@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useTransaction } from './useTransaction'
+import { Transaction } from '@solana/web3.js'
 
 export function useTransactionWithFeedback() {
   const { signAndSend, publicKey, connection } = useTransaction()
   const [txHash, setTxHash] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const executeTransaction = async (txBuilder: () => Promise<any>, actionName: string) => {
+  const executeTransaction = async (txBuilder: () => Promise<Transaction>, actionName: string) => {
     setIsLoading(true)
     setTxHash(null)
     try {
